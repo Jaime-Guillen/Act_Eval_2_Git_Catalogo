@@ -24,10 +24,10 @@ function renderMovies() {
         <span class="badge">${m.year}</span>
       </div>
       <div class="actions">
+        <button class="small edt" data-action="edit">Editar</button>
         <button class="small del" data-action="delete">Eliminar</button>
       </div>
     `;
-
 
         movieList.appendChild(li);
     }
@@ -49,31 +49,54 @@ function addMovie() {
 }
 
 function deleteMovieById(id) {
-  movies = movies.filter(m => m.id !== id);
-  renderMovies();
+    movies = movies.filter(m => m.id !== id);
+    renderMovies();
 }
 
+function editMovieById(id) {
+    const movie = movies.find(m => m.id === id);
+    if (!movie) return;
 
-// Solo funciona añadir al inicio
+    const newTitle = prompt("Nuevo título:", movie.title);
+    if (newTitle === null) return;
+
+    const newYearStr = prompt("Nuevo año:", String(movie.year));
+    if (newYearStr === null) return;
+
+    const newYear = Number(newYearStr);
+
+    if (!newTitle.trim() || !newYear) {
+        alert("Datos no válidos.");
+        return;
+    }
+
+    movie.title = newTitle.trim();
+    movie.year = newYear;
+    renderMovies();
+}
+
+// Eventos principales
 addBtn.addEventListener("click", addMovie);
 
-// Estos eventos se completarán en ramas
-deleteBtn.addEventListener("click", () => alert("Botón para eliminar películas"));
-editBtn.addEventListener("click", () => alert("Se implementa en rama editar"));
+// Delegación de eventos para los botones dentro de la lista
 movieList.addEventListener("click", (e) => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
+    const btn = e.target.closest("button");
+    if (!btn) return;
 
-  const li = e.target.closest("li.item");
-  if (!li) return;
+    const li = e.target.closest("li.item");
+    if (!li) return;
 
-  const id = Number(li.dataset.id);
+    const id = Number(li.dataset.id);
 
-  if (btn.dataset.action === "delete") {
-    deleteMovieById(id);
-  }
+    if (btn.dataset.action === "delete") {
+        deleteMovieById(id);
+    } else if (btn.dataset.action === "edit") {
+        editMovieById(id);
+    }
 });
 
+// Mensajes informativos para los botones de la cabecera (opcional)
+deleteBtn.addEventListener("click", () => alert("Usa los botones de cada película para eliminar"));
+editBtn.addEventListener("click", () => alert("Usa los botones de cada película para editar"));
+
 renderMovies();
-
-
